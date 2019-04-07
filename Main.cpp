@@ -1,12 +1,18 @@
 #include <iostream>
+#include <curses.h>
 #include "Elevator.h"
+#include "Mediator.h"
 
 using namespace std;
 
-int main ()
+int main()
 {
-  cout << "Hello, world!" << endl;
+  Mediator mediator;
   Elevator elevator(5);
-  cout << elevator.getFloor() << endl;
+  cout << "Number of Floors: " << elevator.GetNumberOfFloors() << endl;
+  cout << "Current Floor: " << elevator.GetCurrentFloor() << endl;
+
+  mediator.start();
   return 0;
 }
+
