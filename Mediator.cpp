@@ -1,13 +1,19 @@
 #include "Mediator.h"
+#include "Elevator.h"
 
 Mediator::Mediator()
 {
-    Elevator elevator;
+    elevator = new Elevator(5);
+}
+
+Mediator::~Mediator()
+{
+    delete elevator;
 }
 
 void Mediator::start()
 {
     while(1){
-        elevator.tick();
+        elevator->Tick();
     }
 }

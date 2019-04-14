@@ -1,5 +1,5 @@
 #include <iostream>
-#include <curses.h>
+#include <ncurses.h>
 #include "Elevator.h"
 #include "Mediator.h"
 
@@ -7,12 +7,15 @@ using namespace std;
 
 int main()
 {
+  initscr();
+  noecho();
+
   Mediator mediator;
   Elevator elevator(5);
-  cout << "Number of Floors: " << elevator.GetNumberOfFloors() << endl;
-  cout << "Current Floor: " << elevator.GetCurrentFloor() << endl;
 
   mediator.start();
+
+  endwin();
   return 0;
 }
 

@@ -1,16 +1,17 @@
-// Elevator.h
 #ifndef MEDIATOR_H
-#include "Elevator.h"
 #define MEDIATOR_H
+
+class Elevator;
 
 class Mediator
 {
   public:
     Mediator();
     void start();
+    ~Mediator();
 
   private:
-    Elevator elevator;
+    Elevator *elevator;
 };
 
 #endif
