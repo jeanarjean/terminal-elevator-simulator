@@ -28,7 +28,7 @@ class Elevator
     bool movingDown;
 
   public:
-    Elevator(int numberOfFloors);
+    Elevator();
     void Tick();
     int GetNumberOfFloors();
     int GetCurrentFloor();

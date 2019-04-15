@@ -3,8 +3,9 @@
 
 using namespace std;
 
-Elevator::Elevator(int floor) : number_of_floors(floor), current_floor(0)
+Elevator::Elevator() : current_floor(0)
 {
+  number_of_floors = LINES/5;
   InitRender();
 }
 
@@ -26,7 +27,8 @@ int Elevator::GetNumberOfFloors()
 void Elevator::InitRender()
 {
   x = 0;
-  y = LINES-ELEVATOR_HEIGHT;
+  // y = LINES-ELEVATOR_HEIGHT;
+  y = 0;
   win = newwin(ELEVATOR_HEIGHT, ELEVATOR_WIDTH , y, x);
   leaveok(win, true);
   box(win,0,0);
@@ -36,7 +38,7 @@ void Elevator::InitRender()
 
 void Elevator::Render()
 {
-  MoveUpRender();
+  MoveDownRender();
   wrefresh(win);
   refresh();
 }
@@ -44,9 +46,9 @@ void Elevator::Render()
 void Elevator::MoveUpRender()
 {
   //TODO: Once state implemented,  Y will not be changed here
-  move(y+ELEVATOR_HEIGHT,0);
-  clrtoeol();
   if(y > 5){
+    move(y+ELEVATOR_HEIGHT,0);
+    clrtoeol();
     mvwin(win, --y, 0);
   }
 }
@@ -54,9 +56,9 @@ void Elevator::MoveUpRender()
 void Elevator::MoveDownRender()
 {
   //TODO: Once state implemented,  Y will not be changed here
-  move(y-1,0);
-  clrtoeol();
-  if(y < LINES - ELEVATOR_HEIGHT){
+  if(y < LINES - ELEVATOR_HEIGHT - 1){
+    move(y,0);
+    clrtoeol();
     mvwin(win, ++y, 0);
   }
 }

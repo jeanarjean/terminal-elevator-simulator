@@ -11,7 +11,6 @@ int main()
   noecho();
 
   Mediator mediator;
-  Elevator elevator(5);
 
   mediator.start();
 
