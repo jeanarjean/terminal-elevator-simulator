@@ -1,9 +1,7 @@
 // Elevator.h
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
-#include <stack>
 #include "ncurses.h"
-
 
 using namespace std;
 
@@ -13,7 +11,6 @@ class Elevator
     int current_floor;
     int number_of_floors;
 
-    stack<int> floorOrdered;
     WINDOW *win; 
     int y;
     int x;
@@ -30,11 +27,10 @@ class Elevator
   public:
     Elevator();
     void Tick();
-    int GetNumberOfFloors();
-    int GetCurrentFloor();
 
     void Render();
     void InitRender();
+    void EraseElevatorLag(int y);
 };
 
 #endif

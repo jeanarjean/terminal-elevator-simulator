@@ -1,6 +1,6 @@
 CFLAGS = -O
 CC = g++
-SRC = Main.cpp Elevator.cpp Mediator.cpp
+SRC = Main.cpp Elevator.cpp Mediator.cpp Floor.cpp
 OBJ = $(SRC:.cpp = .o)
 Elevator: $(OBJ)
 	$(CC) $(CFLAGS) -o terminal-elevator-simulator $(OBJ) -lncurses
