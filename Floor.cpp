@@ -1,5 +1,6 @@
 #include "Floor.h"
-#include "ncurses.h"
+#include "Constants.h"
+#include <ncurses.h>
 
 Floor::Floor(int height) : height(height)
 {
@@ -8,6 +9,6 @@ Floor::Floor(int height) : height(height)
 
 void Floor::InitRender()
 {
-   move(height,5);
-   hline(ACS_HLINE, 5);
+   move(height,ELEVATOR_WIDTH);
+   hline(ACS_HLINE, FLOOR_WIDTH);
 }

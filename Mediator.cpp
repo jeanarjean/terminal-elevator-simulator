@@ -1,13 +1,14 @@
 #include "Mediator.h"
 #include "Elevator.h"
 #include "Floor.h"
+#include "Constants.h"
 #include <time.h>
 
 Mediator::Mediator()
 {
     elevator = new Elevator();
     floors = new std::vector<Floor>;
-    for (int i = LINES-1; i > 0; i = i - 5)
+    for (int i = LINES-1; i > ELEVATOR_HEIGHT; i = i - FLOOR_HEIGHT)
     {
         floors->assign(i, Floor(i));
     }

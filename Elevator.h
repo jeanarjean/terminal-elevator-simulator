@@ -10,19 +10,16 @@ class Elevator
   private:
     int current_floor;
     int number_of_floors;
+    int direction;
+    int ticksWaited;
 
     WINDOW *win; 
     int y;
     int x;
 
-    const int ELEVATOR_HEIGHT = 5;
-    const int ELEVATOR_WIDTH = 5;
 
     void MoveUpRender();
     void MoveDownRender();
-
-    bool movingUp;
-    bool movingDown;
 
   public:
     Elevator();

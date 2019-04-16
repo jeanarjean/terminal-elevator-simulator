@@ -1,4 +1,5 @@
 #include "Elevator.h"
+#include "Constants.h"
 #include <iostream>
 
 using namespace std;
@@ -7,6 +8,7 @@ Elevator::Elevator() : current_floor(0)
 {
   number_of_floors = LINES / 5;
   InitRender();
+  direction = DIRECTION_UP;
 }
 
 void Elevator::Tick()
@@ -18,18 +20,22 @@ void Elevator::InitRender()
 {
   x = 0;
   y = LINES-ELEVATOR_HEIGHT;
-  // y = 0;
   win = newwin(ELEVATOR_HEIGHT, ELEVATOR_WIDTH, y, x);
   leaveok(win, true);
   box(win, 0, 0);
-
   wrefresh(win);
 }
 
 void Elevator::Render()
 {
-  // MoveDownRender();
-  MoveUpRender();
+  if(direction == DIRECTION_UP)
+  {
+    MoveUpRender();
+  }
+  else
+  {
+    MoveDownRender();
+  }
   wrefresh(win);
   refresh();
 }
