@@ -12,7 +12,7 @@ Mediator::Mediator()
     for (int i = LINES - 1; i > ELEVATOR_HEIGHT; i = i - FLOOR_HEIGHT)
     {
         Floor floor(i);
-        // floor.PressDownButton();
+        floor.PressDownButton();
         floor.PressUpButton();
         floors->insert(floors->end(), floor);
     }
@@ -31,7 +31,6 @@ void Mediator::Start()
     req.tv_nsec = milisec * 1000000L;
     while (1)
     {
-        nanosleep(&req, (struct timespec *)NULL);
         elevator->Tick();
 
         std::vector<Floor>::iterator ptr;
@@ -57,5 +56,6 @@ void Mediator::Start()
             }
         }
         refresh();
+        nanosleep(&req, (struct timespec *)NULL);
     }
 }

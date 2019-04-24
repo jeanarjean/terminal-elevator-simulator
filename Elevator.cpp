@@ -8,10 +8,23 @@ Elevator::Elevator() : current_floor(0)
 {
   number_of_floors = LINES / 5;
   InitRender();
-  direction = DIRECTION_UP;
-  // direction = DIRECTION_DOWN;
+  // direction = DIRECTION_UP;
+  direction = DIRECTION_DOWN;
   ticksWaited = 0;
   stopped = false;
+}
+
+
+void Elevator::InitRender()
+{
+  x = 0;
+  y = 20;
+  // y = LINES;
+  win = newwin(ELEVATOR_HEIGHT, ELEVATOR_WIDTH, y-ELEVATOR_HEIGHT+1, x);
+  leaveok(win, true);
+  box(win, 0, 0);
+  wrefresh(win);
+  refresh();
 }
 
 void Elevator::Tick()
@@ -21,7 +34,6 @@ void Elevator::Tick()
     ++ticksWaited;
     ticksWaited = ticksWaited + 1;
     move(0,0);
-    printw("biatch", ticksWaited);
     if (ticksWaited > TICKS_TO_STOP)
     {
       stopped = false;
@@ -32,17 +44,6 @@ void Elevator::Tick()
   {
     Render();
   }
-}
-
-void Elevator::InitRender()
-{
-  x = 0;
-  // y = 6;
-  y = LINES;
-  win = newwin(ELEVATOR_HEIGHT, ELEVATOR_WIDTH, y-ELEVATOR_HEIGHT+1, x);
-  leaveok(win, true);
-  box(win, 0, 0);
-  wrefresh(win);
 }
 
 void Elevator::Render()
@@ -72,10 +73,10 @@ void Elevator::MoveUpRender()
 void Elevator::MoveDownRender()
 {
   //TODO: Once state implemented,  Y will not be changed here
-  if (y < LINES - ELEVATOR_HEIGHT - 1)
+  if (y < LINES - 1)
   {
-    // EraseElevatorLag(y);
-    mvwin(win, ++y, 0);
+    EraseElevatorLag(y-ELEVATOR_HEIGHT+1);
+    mvwin(win, ++y-ELEVATOR_HEIGHT+1, 0);
   }
 }
 
