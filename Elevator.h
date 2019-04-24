@@ -1,24 +1,38 @@
 // Elevator.h
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
-#include <stack>
-
+#include "ncurses.h"
 
 using namespace std;
 
 class Elevator
 {
+  public:
+    Elevator();
+    void Tick();
+
+    void Render();
+    void InitRender();
+    void Stop();
+    void EraseElevatorLag(int y);
+    int GetDirection();
+    int GetHeight();
+    bool IsStopped();
+
   private:
     int current_floor;
     int number_of_floors;
-    stack<int> floorOrdered;
+    int direction;
+    int ticksWaited;
+    bool stopped;
 
-  public:
-    Elevator();
-    Elevator(int numberOfFloors);
-    void tick();
-    int GetNumberOfFloors();
-    int GetCurrentFloor();
+    WINDOW *win; 
+    int y;
+    int x;
+
+
+    void MoveUpRender();
+    void MoveDownRender();
 };
 
 #endif

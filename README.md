@@ -14,16 +14,22 @@ The mediator class of this project is used to organize every actors and let them
 together on each tick of the simulation.
 
 ### Elevator
+<<<<<<< HEAD
 The elevator is the main entity of this simulation, it has to act 
 
 
 #### Rules
+=======
+The elevator is the main entity of this simulation, it has to move to the first floor that
+was called by a user, if a floor in between 
+>>>>>>> d990dff5c1bbf0b6af58d06e49555fc258c3138d
 
 ### User
 Users are spawned on a random floor and are also given a random floor they want to access.
 They'll make their way to the elevator and push the up or down button depending on which
 floor they want to access.
 
+<<<<<<< HEAD
 #### Rules
 
 ### Floor
@@ -31,4 +37,19 @@ I debated on wether the floors should be an entity as they contain the buttons a
 
 #### Rules
 
+=======
+### Floor
+I debated on wether the floors should be an entity as they contain the buttons and the users
+
+# TODOS
+## Elevator
+- [ ] Move the elevator according to a requested floor
+- [ ] Render the elevator
+
+## User
+- [ ] Press on elevator button
+- [ ] Enter floor in elevator
+
+## Floor
+>>>>>>> d990dff5c1bbf0b6af58d06e49555fc258c3138d
 

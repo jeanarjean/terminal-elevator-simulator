@@ -1,16 +1,20 @@
-// Elevator.h
 #ifndef MEDIATOR_H
-#include "Elevator.h"
 #define MEDIATOR_H
+#include <vector>
 
+class Elevator;
+class Floor;
 class Mediator
 {
   public:
     Mediator();
-    void start();
+    ~Mediator();
+
+    void Start();
 
   private:
-    Elevator elevator;
+    Elevator *elevator;
+    std::vector<Floor> *floors;
 };
 
 #endif
