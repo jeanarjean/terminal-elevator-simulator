@@ -11,4 +11,5 @@ const int ELEVATOR_WIDTH = 5;
 const int FLOOR_WIDTH = 6;
 const int FLOOR_HEIGHT = 10;
 
+const int TICKS_TO_STOP = 5;
 #endif

@@ -12,7 +12,7 @@ int main()
 
   Mediator mediator;
 
-  mediator.start();
+  mediator.Start();
 
   endwin();
   return 0;

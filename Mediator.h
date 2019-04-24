@@ -8,8 +8,9 @@ class Mediator
 {
   public:
     Mediator();
-    void start();
     ~Mediator();
+
+    void Start();
 
   private:
     Elevator *elevator;
