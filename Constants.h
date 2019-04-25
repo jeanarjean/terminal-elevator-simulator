@@ -12,4 +12,6 @@ const int FLOOR_WIDTH = 6;
 const int FLOOR_HEIGHT = 10;
 
 const int TICKS_TO_STOP = 5;
+
+const int TICKS_PASSENGER_SPAWN_INTERVAL = 50;
 #endif

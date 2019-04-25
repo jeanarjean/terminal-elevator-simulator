@@ -9,10 +9,9 @@ class Floor;
 class Passenger
 {
     public:
-    Passenger(Floor* spawnedFloor, Floor* floorWantsToGo);
+    Passenger(Floor* floorWantsToGo, Floor* floorSpawnedOn);
 
     private:
-    Floor* spawnedFloor;
     Floor* floorWantsToGo;
     int direction;
 

@@ -1,5 +1,6 @@
 #include "Floor.h"
 #include "Constants.h"
+#include "Passenger.h"
 #include <ncurses.h>
 
 Floor::Floor(int height) : height(height)
@@ -7,6 +8,7 @@ Floor::Floor(int height) : height(height)
    InitRender();
    upButtonPresed = false;
    downButtonPresed = false;
+   passengers = new std::vector<Passenger>;
 }
 
 void Floor::InitRender()
@@ -37,6 +39,12 @@ void Floor::Tick()
       move(height - 2, ELEVATOR_WIDTH);
       addch(' ');
    }
+        std::vector<Passenger>::iterator passengerIt;
+        for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
+        {
+           move(height - 1, ELEVATOR_WIDTH);
+           addch('a');
+        }
 }
 
 void Floor::PressUpButton()
@@ -72,4 +80,9 @@ bool Floor::UpButtonPressed()
 bool Floor::DownButtonPressed()
 {
    return downButtonPresed;
+}
+
+std::vector<Passenger>* Floor::getPassengers()
+{
+   return passengers;
 }

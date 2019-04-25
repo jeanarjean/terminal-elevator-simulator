@@ -1,6 +1,9 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
+#include <vector>
+#include "Passenger.h"
+
 class Floor
 {
     public: 
@@ -14,11 +17,13 @@ class Floor
     int GetHeight();
     bool UpButtonPressed();
     bool DownButtonPressed();
+    std::vector<Passenger>* getPassengers();
 
     private:
     bool upButtonPresed;
     bool downButtonPresed;
     int height;
+    std::vector<Passenger> *passengers;
 
     void InitRender();
 };
