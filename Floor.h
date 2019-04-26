@@ -20,12 +20,13 @@ class Floor
     std::vector<Passenger>* getPassengers();
 
     private:
+    void InitRender();
+
     bool upButtonPresed;
     bool downButtonPresed;
     int height;
     std::vector<Passenger> *passengers;
 
-    void InitRender();
 };
 
 #endif

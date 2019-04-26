@@ -2,8 +2,11 @@
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
 #include "ncurses.h"
+#include <vector>
 
 using namespace std;
+
+class Passenger;
 
 class Elevator
 {
@@ -15,9 +18,12 @@ class Elevator
     void InitRender();
     void Stop();
     void EraseElevatorLag(int y);
-    int GetDirection();
-    int GetHeight();
+    void SetDirection(int newDirection);
+    const int GetDirection();
+    const int GetHeight();
     bool IsStopped();
+    std::vector<Passenger>* getPassengers();
+
 
   private:
     int current_floor;
@@ -25,6 +31,7 @@ class Elevator
     int direction;
     int ticksWaited;
     bool stopped;
+    std::vector<Passenger> *passengers;
 
     WINDOW *win; 
     int y;

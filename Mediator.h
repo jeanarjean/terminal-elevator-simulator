@@ -15,6 +15,14 @@ class Mediator
   private:
     Elevator *elevator;
     std::vector<Floor> *floors;
+    int ticksToSpawnPassenger;
+
+    void TransferFromElevatorToFloor(Elevator* elevator, Floor* floor);
+    void TransferFromFloorToElevator(Elevator* elevator, Floor* floor);
+
+    void DetermineElevatorDirection();
+
+    void SpawnPassenger();
 };
 
 #endif

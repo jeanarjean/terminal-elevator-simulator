@@ -39,12 +39,15 @@ void Floor::Tick()
       move(height - 2, ELEVATOR_WIDTH);
       addch(' ');
    }
-        std::vector<Passenger>::iterator passengerIt;
-        for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
-        {
-           move(height - 1, ELEVATOR_WIDTH);
-           addch('a');
-        }
+
+   std::vector<Passenger>::iterator passengerIt;
+   int i = 0;
+   for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
+   {
+      move(height - 1, ELEVATOR_WIDTH + i);
+      addch(passengerIt->getSprite());
+      ++i;
+   }
 }
 
 void Floor::PressUpButton()
@@ -82,7 +85,7 @@ bool Floor::DownButtonPressed()
    return downButtonPresed;
 }
 
-std::vector<Passenger>* Floor::getPassengers()
+std::vector<Passenger> *Floor::getPassengers()
 {
    return passengers;
 }

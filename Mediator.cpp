@@ -1,9 +1,9 @@
 #include "Mediator.h"
 #include "Elevator.h"
 #include "Floor.h"
-#include <iostream>
 #include "Constants.h"
 #include "Passenger.h"
+#include <iostream>
 #include <time.h>
 
 Mediator::Mediator()
@@ -17,6 +17,7 @@ Mediator::Mediator()
         floor.PressUpButton();
         floors->insert(floors->end(), floor);
     }
+    ticksToSpawnPassenger = 0;
 }
 
 Mediator::~Mediator()
@@ -30,52 +31,122 @@ void Mediator::Start()
     struct timespec req = {0};
     req.tv_sec = 0;
     req.tv_nsec = milisec * 1000000L;
-    int ticksToSpawnPassenger = 0;
     while (1)
     {
-        elevator->Tick();
-
+        elevator->Tick(); 
+   
         std::vector<Floor>::iterator floorIt;
         for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
         {
             floorIt->Tick();
             if (!elevator->IsStopped())
             {
-                if (floorIt->UpButtonPressed() && elevator->GetDirection() == DIRECTION_UP && floorIt->GetHeight() == elevator->GetHeight())
+                if (floorIt->GetHeight() == elevator->GetHeight())
                 {
-                    move(elevator->GetHeight(), ELEVATOR_HEIGHT);
-                    floorIt->ResetUpButton();
-                    elevator->Stop();
+                    if (floorIt->UpButtonPressed() && elevator->GetDirection() == DIRECTION_UP)
+                    {
+                        floorIt->ResetUpButton();
+                        elevator->Stop();
+                        TransferFromElevatorToFloor(elevator, &(*floorIt));
+                        TransferFromFloorToElevator(elevator, &(*floorIt));
+                    }
+                    if (floorIt->DownButtonPressed() && elevator->GetDirection() == DIRECTION_DOWN)
+                    {
+                        floorIt->ResetDownButton();
+                        elevator->Stop();
+                        TransferFromElevatorToFloor(elevator, &(*floorIt));
+                        TransferFromFloorToElevator(elevator, &(*floorIt));
+                    }
+                    DetermineElevatorDirection();
                 }
-                if (floorIt->DownButtonPressed() && elevator->GetDirection() == DIRECTION_DOWN && floorIt->GetHeight() == elevator->GetHeight())
-                {
-                    move(elevator->GetHeight(), ELEVATOR_HEIGHT);
-                    floorIt->ResetDownButton();
-                    elevator->Stop();
-                }
-            }
-
-            ticksToSpawnPassenger++;
-            if (ticksToSpawnPassenger > TICKS_PASSENGER_SPAWN_INTERVAL)
-            {
-                ticksToSpawnPassenger = 0;
-
-                vector<Floor>::iterator floorWantsToGoIt = floors->begin();
-                std::advance(floorWantsToGoIt, std::rand() % floors->size());
-
-                vector<Floor>::iterator floorSpawnedOnIt = floors->begin();
-                std::advance(floorSpawnedOnIt, std::rand() % floors->size());
-                while (&(*floorWantsToGoIt) == &(*(floorSpawnedOnIt)))
-                {
-                    floorSpawnedOnIt = floors->begin();
-                    std::advance(floorSpawnedOnIt, std::rand() % floors->size());
-                }
-
-                Passenger passenger(&(*floorWantsToGoIt), &(*floorSpawnedOnIt));
-                floorSpawnedOnIt->getPassengers()->insert(floorSpawnedOnIt->getPassengers()->end(), passenger);
             }
         }
+        SpawnPassenger();
         refresh();
         nanosleep(&req, (struct timespec *)NULL);
+    }
+}
+
+void Mediator::TransferFromElevatorToFloor(Elevator *elevator, Floor *floor)
+{
+    std::vector<Passenger>::iterator passengerIt;
+    for (passengerIt = elevator->getPassengers()->begin(); passengerIt < elevator->getPassengers()->end(); passengerIt++)
+    {
+        if (passengerIt->getFlootWantsToGo() == floor)
+        {
+            elevator->getPassengers()->erase(passengerIt);
+        }
+    }
+}
+
+void Mediator::TransferFromFloorToElevator(Elevator *elevator, Floor *floor)
+{
+    std::vector<Passenger>::iterator passengerIt;
+    for (passengerIt = floor->getPassengers()->begin(); passengerIt < floor->getPassengers()->end(); passengerIt++)
+    {
+        if (passengerIt->getDirection() == elevator->GetDirection())
+        {
+            elevator->getPassengers()->insert(elevator->getPassengers()->end(), *(passengerIt));
+            floor->getPassengers()->erase(passengerIt);
+        }
+    }
+}
+
+void Mediator::SpawnPassenger()
+{
+    ticksToSpawnPassenger++;
+    if (ticksToSpawnPassenger > TICKS_PASSENGER_SPAWN_INTERVAL)
+    {
+        ticksToSpawnPassenger = 0;
+
+        vector<Floor>::iterator floorWantsToGoIt = floors->begin();
+        std::advance(floorWantsToGoIt, std::rand() % floors->size());
+
+        vector<Floor>::iterator floorSpawnedOnIt = floors->begin();
+        std::advance(floorSpawnedOnIt, std::rand() % floors->size());
+        while (&(*floorWantsToGoIt) == &(*(floorSpawnedOnIt)))
+        {
+            floorSpawnedOnIt = floors->begin();
+            std::advance(floorSpawnedOnIt, std::rand() % floors->size());
+        }
+
+        Passenger passenger(&(*floorWantsToGoIt), &(*floorSpawnedOnIt));
+        floorSpawnedOnIt->getPassengers()->insert(floorSpawnedOnIt->getPassengers()->end(), passenger);
+    }
+}
+
+void Mediator::DetermineElevatorDirection()
+{
+    if (elevator->GetDirection() == DIRECTION_DOWN)
+    {
+        bool floorBelowToServe = false;
+        std::vector<Floor>::iterator floorIt;
+        for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
+        {
+            if (floorIt->GetHeight() > elevator->GetHeight() && (floorIt->DownButtonPressed() || floorIt->UpButtonPressed()))
+            {
+                floorBelowToServe = true;
+            }
+        }
+        if (!floorBelowToServe)
+        {
+            elevator->SetDirection(DIRECTION_UP);
+        }
+    }
+    if (elevator->GetDirection() == DIRECTION_UP)
+    {
+        bool floorAboveToServe = false;
+        std::vector<Floor>::iterator floorIt;
+        for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
+        {
+            if (floorIt->GetHeight() < elevator->GetHeight() && (floorIt->DownButtonPressed() || floorIt->UpButtonPressed()))
+            {
+                floorAboveToServe = true;
+            }
+        }
+        if (!floorAboveToServe)
+        {
+            elevator->SetDirection(DIRECTION_DOWN);
+        }
     }
 }
