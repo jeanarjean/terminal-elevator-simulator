@@ -33,8 +33,7 @@ void Mediator::Start()
     req.tv_nsec = milisec * 1000000L;
     while (1)
     {
-        elevator->Tick(); 
-   
+
         std::vector<Floor>::iterator floorIt;
         for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
         {
@@ -61,6 +60,7 @@ void Mediator::Start()
                 }
             }
         }
+        elevator->Tick();
         SpawnPassenger();
         refresh();
         nanosleep(&req, (struct timespec *)NULL);
@@ -117,36 +117,97 @@ void Mediator::SpawnPassenger()
 
 void Mediator::DetermineElevatorDirection()
 {
-    if (elevator->GetDirection() == DIRECTION_DOWN)
+    std::vector<Floor>::iterator floorIt;
+
+    if (elevator->GetDirection() == DIRECTION_UP)
     {
-        bool floorBelowToServe = false;
-        std::vector<Floor>::iterator floorIt;
+        bool floorAboveToServeSameDirection = false;
+        bool floorAboveToServeDifferentDirection = false;
+        bool floorBelowToServeDifferentDirection = false;
+        int highestFloorThatHasToGoDown = LINES;
         for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
         {
-            if (floorIt->GetHeight() > elevator->GetHeight() && (floorIt->DownButtonPressed() || floorIt->UpButtonPressed()))
+            if (floorIt->GetHeight() < elevator->GetHeight())
             {
-                floorBelowToServe = true;
+                if (floorIt->UpButtonPressed())
+                {
+                    floorAboveToServeSameDirection = true;
+                }
+                if (floorIt->DownButtonPressed())
+                {
+                    floorAboveToServeDifferentDirection = true;
+                    if (floorIt->GetHeight() < highestFloorThatHasToGoDown)
+                    {
+                        highestFloorThatHasToGoDown = floorIt->GetHeight();
+                    }
+                }
+            }
+            if (floorIt->GetHeight() >= elevator->GetHeight() && floorIt->DownButtonPressed())
+            {
+                floorBelowToServeDifferentDirection = true;
             }
         }
-        if (!floorBelowToServe)
+        if (floorAboveToServeSameDirection)
         {
             elevator->SetDirection(DIRECTION_UP);
         }
-    }
-    if (elevator->GetDirection() == DIRECTION_UP)
-    {
-        bool floorAboveToServe = false;
-        std::vector<Floor>::iterator floorIt;
-        for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
+        else if (!floorAboveToServeSameDirection && floorAboveToServeDifferentDirection)
         {
-            if (floorIt->GetHeight() < elevator->GetHeight() && (floorIt->DownButtonPressed() || floorIt->UpButtonPressed()))
-            {
-                floorAboveToServe = true;
-            }
+            elevator->Readjust(highestFloorThatHasToGoDown);
         }
-        if (!floorAboveToServe)
+        else if (floorBelowToServeDifferentDirection)
         {
             elevator->SetDirection(DIRECTION_DOWN);
+        }
+        else
+        {
+            elevator->SetDirection(DIRECTION_IDLE);
+        }
+    }
+
+    if (elevator->GetDirection() == DIRECTION_DOWN)
+    {
+        bool floorBelowToServeSameDirection = false;
+        bool floorBelowToServeDifferentDirection = false;
+        bool floorAboveToServeDifferentDirection = false;
+        int lowestFloorThatHasToGoDown = 0;
+        for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
+        {
+            if (floorIt->GetHeight() > elevator->GetHeight())
+            {
+                if (floorIt->DownButtonPressed())
+                {
+                    floorBelowToServeSameDirection = true;
+                }
+                if (floorIt->UpButtonPressed())
+                {
+                    floorBelowToServeDifferentDirection = true;
+                    if (floorIt->GetHeight() > lowestFloorThatHasToGoDown)
+                    {
+                        lowestFloorThatHasToGoDown = floorIt->GetHeight();
+                    }
+                }
+            }
+            if (floorIt->GetHeight() <= elevator->GetHeight() && floorIt->UpButtonPressed())
+            {
+                floorAboveToServeDifferentDirection = true;
+            }
+        }
+        if (floorBelowToServeSameDirection)
+        {
+            elevator->SetDirection(DIRECTION_DOWN);
+        }
+        else if (!floorBelowToServeSameDirection && floorBelowToServeDifferentDirection)
+        {
+            elevator->Readjust(lowestFloorThatHasToGoDown);
+        }
+        else if (floorAboveToServeDifferentDirection)
+        {
+            elevator->SetDirection(DIRECTION_UP);
+        }
+        else
+        {
+            elevator->SetDirection(DIRECTION_IDLE);
         }
     }
 }

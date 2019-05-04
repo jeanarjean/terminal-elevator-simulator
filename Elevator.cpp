@@ -10,7 +10,7 @@ Elevator::Elevator() : current_floor(0)
   number_of_floors = LINES / 5;
   InitRender();
   // direction = DIRECTION_UP;
-  direction = DIRECTION_DOWN;
+  direction = DIRECTION_UP;
   ticksWaited = 0;
   stopped = false;
   passengers = new std::vector<Passenger>;
@@ -19,8 +19,8 @@ Elevator::Elevator() : current_floor(0)
 void Elevator::InitRender()
 {
   x = 0;
-  y = 20;
-  // y = LINES;
+  // y = 20;
+  y = LINES;
   win = newwin(ELEVATOR_HEIGHT, ELEVATOR_WIDTH, y - ELEVATOR_HEIGHT + 1, x);
   leaveok(win, true);
   box(win, 0, 0);
@@ -38,13 +38,46 @@ void Elevator::Tick()
     if (ticksWaited > TICKS_TO_STOP)
     {
       stopped = false;
-      Render();
     }
   }
-  else
+  else if (direction == DIRECTION_READJUSTING)
   {
-    Render();
+    if (y < readjustingHeight)
+    {
+      y++;
+      if (y == readjustingHeight)
+      {
+        direction = DIRECTION_UP;
+      }
+    }
+    else if (y > readjustingHeight)
+    {
+      y--;
+      if (y == readjustingHeight)
+      {
+        direction = DIRECTION_DOWN;
+      }
+    }
   }
+  else if (direction == DIRECTION_DOWN)
+  {
+    if (y < LINES - 1)
+    {
+      y++;
+    }
+  }
+  else if (direction == DIRECTION_UP)
+  {
+    if (y > 3)
+    {
+      y--;
+    }
+  }
+  else if (direction == DIRECTION_IDLE)
+  {
+  }
+
+  Render();
 }
 
 void Elevator::Render()
@@ -57,36 +90,10 @@ void Elevator::Render()
     addch(passengerIt->getSprite());
   }
 
-  if (direction == DIRECTION_UP)
-  {
-    MoveUpRender();
-  }
-  else
-  {
-    MoveDownRender();
-  }
+  EraseElevatorLag(y + 1);
+  EraseElevatorLag(y - ELEVATOR_HEIGHT);
+  mvwin(win, y - ELEVATOR_HEIGHT + 1, 0);
   wrefresh(win);
-}
-
-void Elevator::MoveUpRender()
-{
-  //TODO: Once state implemented,  Y will not be changed here
-  // Replace y with last floor position
-  if (y > 3)
-  {
-    EraseElevatorLag(y);
-    mvwin(win, --y - ELEVATOR_HEIGHT + 1, 0);
-  }
-}
-
-void Elevator::MoveDownRender()
-{
-  //TODO: Once state implemented,  Y will not be changed here
-  if (y < LINES - 1)
-  {
-    EraseElevatorLag(y - ELEVATOR_HEIGHT + 1);
-    mvwin(win, ++y - ELEVATOR_HEIGHT + 1, 0);
-  }
 }
 
 void Elevator::EraseElevatorLag(int y)
@@ -128,4 +135,10 @@ bool Elevator::IsStopped()
 std::vector<Passenger> *Elevator::getPassengers()
 {
   return passengers;
+}
+
+void Elevator::Readjust(int readjustHeight)
+{
+  direction = DIRECTION_READJUSTING;
+  readjustingHeight = readjustHeight;
 }
