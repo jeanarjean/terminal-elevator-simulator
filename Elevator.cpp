@@ -82,11 +82,19 @@ void Elevator::Tick()
 
 void Elevator::Render()
 {
+  int elevatorCapacity = ELEVATOR_HEIGHT * ELEVATOR_WIDTH;
+  for (int i =0; i < elevatorCapacity; i++)
+  {
+    move(i/ELEVATOR_WIDTH-1, i%ELEVATOR_WIDTH);
+    addch(' ');
+  }
+
   int i = 0;
   std::vector<Passenger>::iterator passengerIt;
   for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
   {
-    move(y - 1, ++i);
+    ++i;
+    move(y - i/ELEVATOR_WIDTH-1, i%ELEVATOR_WIDTH);
     addch(passengerIt->getSprite());
   }
 

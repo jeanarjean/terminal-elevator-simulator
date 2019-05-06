@@ -40,6 +40,11 @@ void Floor::Tick()
       addch(' ');
    }
 
+   for (int i = 0; i < FLOOR_WIDTH; i++)
+   {
+      move(height - 1, ELEVATOR_WIDTH + i);
+      addch(' ');
+   }
    std::vector<Passenger>::iterator passengerIt;
    int i = 0;
    for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
