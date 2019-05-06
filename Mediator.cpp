@@ -56,6 +56,12 @@ void Mediator::Start()
                         TransferFromElevatorToFloor(elevator, &(*floorIt));
                         TransferFromFloorToElevator(elevator, &(*floorIt));
                     }
+                    if(DetermineIfShouldStopForPassengers(elevator, &(*floorIt)))
+                    {
+                        elevator->Stop();
+                        TransferFromElevatorToFloor(elevator, &(*floorIt));
+                        TransferFromFloorToElevator(elevator, &(*floorIt));
+                    }
                     DetermineElevatorDirection();
                 }
             }
@@ -65,6 +71,20 @@ void Mediator::Start()
         refresh();
         nanosleep(&req, (struct timespec *)NULL);
     }
+}
+
+bool Mediator::DetermineIfShouldStopForPassengers(Elevator* elevator, Floor* floor)
+{
+    std::vector<Passenger>::iterator passengerIt;
+    bool shouldStop = false;
+    for (passengerIt = elevator->getPassengers()->begin(); passengerIt < elevator->getPassengers()->end(); passengerIt++)
+    {
+        if (passengerIt->getFlootWantsToGo() == floor)
+        {
+            shouldStop = true;
+        }
+    }
+    return shouldStop;
 }
 
 void Mediator::TransferFromElevatorToFloor(Elevator *elevator, Floor *floor)

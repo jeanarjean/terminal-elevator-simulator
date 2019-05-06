@@ -21,6 +21,7 @@ class Mediator
     void TransferFromFloorToElevator(Elevator* elevator, Floor* floor);
 
     void DetermineElevatorDirection();
+    bool DetermineIfShouldStopForPassengers(Elevator* elevator, Floor* floor);
 
     void SpawnPassenger();
 };
