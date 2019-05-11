@@ -10,7 +10,9 @@ class Mediator
     Mediator();
     ~Mediator();
 
-    void Start();
+    void Run();
+    void Update();
+    void Render();
 
   private:
     Elevator *elevator;

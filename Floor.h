@@ -9,7 +9,7 @@ class Floor
     public: 
     Floor(int height);
 
-    void Tick();
+    void Update();
     void PressUpButton();
     void PressDownButton();
     void ResetUpButton();
@@ -22,8 +22,8 @@ class Floor
     private:
     void InitRender();
 
-    bool upButtonPresed;
-    bool downButtonPresed;
+    bool upButtonPressed;
+    bool downButtonPressed;
     int height;
     std::vector<Passenger> *passengers;
 

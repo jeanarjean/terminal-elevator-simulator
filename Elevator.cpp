@@ -9,8 +9,8 @@ Elevator::Elevator() : current_floor(0)
 {
   number_of_floors = LINES / 5;
   InitRender();
-  // direction = DIRECTION_UP;
-  direction = DIRECTION_UP;
+  // state = ELEVATOR_STATE_GOING_UP;
+  state = ELEVATOR_STATE_GOING_UP;
   ticksWaited = 0;
   stopped = false;
   passengers = new std::vector<Passenger>;
@@ -18,7 +18,7 @@ Elevator::Elevator() : current_floor(0)
 
 void Elevator::InitRender()
 {
-  x = 0;
+  x = ELEVATOR_STATE_GOING_DOWN;
   // y = 20;
   y = LINES;
   win = newwin(ELEVATOR_HEIGHT, ELEVATOR_WIDTH, y - ELEVATOR_HEIGHT + 1, x);
@@ -28,8 +28,17 @@ void Elevator::InitRender()
   refresh();
 }
 
-void Elevator::Tick()
+void Elevator::Update()
 {
+  switch (state)
+  {
+    case ELEVATOR_STATE_IDLE:
+      /* code */
+      break;
+  
+    default:
+      break;
+  }
   if (stopped)
   {
     ++ticksWaited;
@@ -40,14 +49,14 @@ void Elevator::Tick()
       stopped = false;
     }
   }
-  else if (direction == DIRECTION_READJUSTING)
+  else if (state == ELEVATOR_STATE_READJUSTING)
   {
     if (y < readjustingHeight)
     {
       y++;
       if (y == readjustingHeight)
       {
-        direction = DIRECTION_UP;
+        state = ELEVATOR_STATE_GOING_UP;
       }
     }
     else if (y > readjustingHeight)
@@ -55,25 +64,25 @@ void Elevator::Tick()
       y--;
       if (y == readjustingHeight)
       {
-        direction = DIRECTION_DOWN;
+        state = ELEVATOR_STATE_GOING_DOWN;
       }
     }
   }
-  else if (direction == DIRECTION_DOWN)
+  else if (state == ELEVATOR_STATE_GOING_DOWN)
   {
     if (y < LINES - 1)
     {
       y++;
     }
   }
-  else if (direction == DIRECTION_UP)
+  else if (state == ELEVATOR_STATE_GOING_UP)
   {
     if (y > 3)
     {
       y--;
     }
   }
-  else if (direction == DIRECTION_IDLE)
+  else if (state == ELEVATOR_STATE_IDLE)
   {
   }
 
@@ -119,14 +128,14 @@ const int Elevator::GetHeight()
   return y;
 }
 
-const int Elevator::GetDirection()
+const int Elevator::GetState()
 {
-  return direction;
+  return state;
 }
 
-void Elevator::SetDirection(int newDirection)
+void Elevator::SetState(int newState)
 {
-  direction = newDirection;
+  state = newState;
 }
 
 void Elevator::Stop()
@@ -147,6 +156,6 @@ std::vector<Passenger> *Elevator::getPassengers()
 
 void Elevator::Readjust(int readjustHeight)
 {
-  direction = DIRECTION_READJUSTING;
+  state = ELEVATOR_STATE_READJUSTING;
   readjustingHeight = readjustHeight;
 }

@@ -12,14 +12,14 @@ class Elevator
 {
 public:
   Elevator();
-  void Tick();
+  void Update();
 
   void Render();
   void InitRender();
   void Stop();
   void EraseElevatorLag(int y);
-  void SetDirection(int newDirection);
-  const int GetDirection();
+  void SetState(int newState);
+  const int GetState();
   const int GetHeight();
   bool IsStopped();
   std::vector<Passenger> *getPassengers();
@@ -29,7 +29,7 @@ private:
   int readjustingHeight;
   int current_floor;
   int number_of_floors;
-  int direction;
+  int state;
   int ticksWaited;
   bool stopped;
   std::vector<Passenger> *passengers;

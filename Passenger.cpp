@@ -8,7 +8,7 @@ Passenger::Passenger(Floor* floorWants, Floor* floorSpawned)
     floorWantsToGo = floorWants;
     if(floorWantsToGo->GetHeight() > floorSpawned->GetHeight())
     {
-       direction = DIRECTION_DOWN; 
+       direction = ELEVATOR_STATE_GOING_DOWN; 
        if(!floorSpawned->DownButtonPressed())
        {
          floorSpawned->PressDownButton();
@@ -16,13 +16,12 @@ Passenger::Passenger(Floor* floorWants, Floor* floorSpawned)
     }
     else
     {
-       direction = DIRECTION_UP; 
+       direction = ELEVATOR_STATE_GOING_UP; 
        if(!floorSpawned->UpButtonPressed())
        {
          floorSpawned->PressUpButton();
        }
     }
-    direction = DIRECTION_DOWN; 
     int r = std::rand() % 26;   // generate a random number
     sprite = 'a' + r;
 }

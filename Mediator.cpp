@@ -25,7 +25,7 @@ Mediator::~Mediator()
     delete elevator;
 }
 
-void Mediator::Start()
+void Mediator::Run()
 {
     int milisec = 200; // length of time to sleep, in miliseconds
     struct timespec req = {0};
@@ -33,30 +33,38 @@ void Mediator::Start()
     req.tv_nsec = milisec * 1000000L;
     while (1)
     {
+        Update();
+        Render();
+        nanosleep(&req, (struct timespec *)NULL);
+    }
+}
+
+void Mediator::Update()
+{
 
         std::vector<Floor>::iterator floorIt;
         for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
         {
-            floorIt->Tick();
+            floorIt->Update();
             if (!elevator->IsStopped())
             {
                 if (floorIt->GetHeight() == elevator->GetHeight())
                 {
-                    if (floorIt->UpButtonPressed() && elevator->GetDirection() == DIRECTION_UP)
+                    if (floorIt->UpButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_UP)
                     {
                         floorIt->ResetUpButton();
                         elevator->Stop();
                         TransferFromElevatorToFloor(elevator, &(*floorIt));
                         TransferFromFloorToElevator(elevator, &(*floorIt));
                     }
-                    if (floorIt->DownButtonPressed() && elevator->GetDirection() == DIRECTION_DOWN)
+                    if (floorIt->DownButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_DOWN)
                     {
                         floorIt->ResetDownButton();
                         elevator->Stop();
                         TransferFromElevatorToFloor(elevator, &(*floorIt));
                         TransferFromFloorToElevator(elevator, &(*floorIt));
                     }
-                    if(DetermineIfShouldStopForPassengers(elevator, &(*floorIt)))
+                    if (DetermineIfShouldStopForPassengers(elevator, &(*floorIt)))
                     {
                         elevator->Stop();
                         TransferFromElevatorToFloor(elevator, &(*floorIt));
@@ -66,14 +74,18 @@ void Mediator::Start()
                 }
             }
         }
-        elevator->Tick();
+        elevator->Update();
         SpawnPassenger();
         refresh();
-        nanosleep(&req, (struct timespec *)NULL);
-    }
+    
 }
 
-bool Mediator::DetermineIfShouldStopForPassengers(Elevator* elevator, Floor* floor)
+void Mediator::Render()
+{
+
+}
+
+bool Mediator::DetermineIfShouldStopForPassengers(Elevator *elevator, Floor *floor)
 {
     std::vector<Passenger>::iterator passengerIt;
     bool shouldStop = false;
@@ -104,7 +116,7 @@ void Mediator::TransferFromFloorToElevator(Elevator *elevator, Floor *floor)
     std::vector<Passenger>::iterator passengerIt;
     for (passengerIt = floor->getPassengers()->begin(); passengerIt < floor->getPassengers()->end(); passengerIt++)
     {
-        if (passengerIt->getDirection() == elevator->GetDirection())
+        if (passengerIt->getDirection() == elevator->GetState())
         {
             elevator->getPassengers()->insert(elevator->getPassengers()->end(), *(passengerIt));
             floor->getPassengers()->erase(passengerIt);
@@ -139,7 +151,7 @@ void Mediator::DetermineElevatorDirection()
 {
     std::vector<Floor>::iterator floorIt;
 
-    if (elevator->GetDirection() == DIRECTION_UP)
+    if (elevator->GetState() == ELEVATOR_STATE_GOING_UP)
     {
         bool floorAboveToServeSameDirection = false;
         bool floorAboveToServeDifferentDirection = false;
@@ -169,7 +181,7 @@ void Mediator::DetermineElevatorDirection()
         }
         if (floorAboveToServeSameDirection)
         {
-            elevator->SetDirection(DIRECTION_UP);
+            elevator->SetState(ELEVATOR_STATE_GOING_UP);
         }
         else if (!floorAboveToServeSameDirection && floorAboveToServeDifferentDirection)
         {
@@ -177,15 +189,15 @@ void Mediator::DetermineElevatorDirection()
         }
         else if (floorBelowToServeDifferentDirection)
         {
-            elevator->SetDirection(DIRECTION_DOWN);
+            elevator->SetState(ELEVATOR_STATE_GOING_DOWN);
         }
         else
         {
-            elevator->SetDirection(DIRECTION_IDLE);
+            elevator->SetState(ELEVATOR_STATE_IDLE);
         }
     }
 
-    if (elevator->GetDirection() == DIRECTION_DOWN)
+    if (elevator->GetState() == ELEVATOR_STATE_GOING_DOWN)
     {
         bool floorBelowToServeSameDirection = false;
         bool floorBelowToServeDifferentDirection = false;
@@ -215,7 +227,7 @@ void Mediator::DetermineElevatorDirection()
         }
         if (floorBelowToServeSameDirection)
         {
-            elevator->SetDirection(DIRECTION_DOWN);
+            elevator->SetState(ELEVATOR_STATE_GOING_DOWN);
         }
         else if (!floorBelowToServeSameDirection && floorBelowToServeDifferentDirection)
         {
@@ -223,11 +235,11 @@ void Mediator::DetermineElevatorDirection()
         }
         else if (floorAboveToServeDifferentDirection)
         {
-            elevator->SetDirection(DIRECTION_UP);
+            elevator->SetState(ELEVATOR_STATE_GOING_UP);
         }
         else
         {
-            elevator->SetDirection(DIRECTION_IDLE);
+            elevator->SetState(ELEVATOR_STATE_IDLE);
         }
     }
 }

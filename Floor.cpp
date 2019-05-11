@@ -6,8 +6,8 @@
 Floor::Floor(int height) : height(height)
 {
    InitRender();
-   upButtonPresed = false;
-   downButtonPresed = false;
+   upButtonPressed = false;
+   downButtonPressed = false;
    passengers = new std::vector<Passenger>;
 }
 
@@ -17,9 +17,9 @@ void Floor::InitRender()
    hline(ACS_HLINE, FLOOR_WIDTH);
 }
 
-void Floor::Tick()
+void Floor::Update()
 {
-   if (upButtonPresed)
+   if (upButtonPressed)
    {
       move(height - 3, ELEVATOR_WIDTH);
       addch(ACS_UARROW);
@@ -29,7 +29,7 @@ void Floor::Tick()
       move(height - 3, ELEVATOR_WIDTH);
       addch(' ');
    }
-   if (downButtonPresed)
+   if (downButtonPressed)
    {
       move(height - 2, ELEVATOR_WIDTH);
       addch(ACS_DARROW);
@@ -57,22 +57,22 @@ void Floor::Tick()
 
 void Floor::PressUpButton()
 {
-   upButtonPresed = true;
+   upButtonPressed = true;
 }
 
 void Floor::ResetUpButton()
 {
-   upButtonPresed = false;
+   upButtonPressed = false;
 }
 
 void Floor::PressDownButton()
 {
-   downButtonPresed = true;
+   downButtonPressed = true;
 }
 
 void Floor::ResetDownButton()
 {
-   downButtonPresed = false;
+   downButtonPressed = false;
 }
 
 int Floor::GetHeight()
@@ -82,12 +82,12 @@ int Floor::GetHeight()
 
 bool Floor::UpButtonPressed()
 {
-   return upButtonPresed;
+   return upButtonPressed;
 }
 
 bool Floor::DownButtonPressed()
 {
-   return downButtonPresed;
+   return downButtonPressed;
 }
 
 std::vector<Passenger> *Floor::getPassengers()
