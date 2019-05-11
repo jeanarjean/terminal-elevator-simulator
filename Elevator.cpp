@@ -32,25 +32,23 @@ void Elevator::Update()
 {
   switch (state)
   {
-    case ELEVATOR_STATE_IDLE:
-      /* code */
-      break;
-  
-    default:
-      break;
-  }
-  if (stopped)
-  {
-    ++ticksWaited;
-    ticksWaited = ticksWaited + 1;
-    move(0, 0);
-    if (ticksWaited > TICKS_TO_STOP)
+  case ELEVATOR_STATE_IDLE:
+    /* code */
+    break;
+
+  case ELEVATOR_STATE_GOING_DOWN:
+    if (y < LINES - 1)
     {
-      stopped = false;
+      y++;
     }
-  }
-  else if (state == ELEVATOR_STATE_READJUSTING)
-  {
+    break;
+  case ELEVATOR_STATE_GOING_UP:
+    if (y > 3)
+    {
+      y--;
+    }
+    break;
+  case ELEVATOR_STATE_READJUSTING:
     if (y < readjustingHeight)
     {
       y++;
@@ -67,34 +65,28 @@ void Elevator::Update()
         state = ELEVATOR_STATE_GOING_DOWN;
       }
     }
-  }
-  else if (state == ELEVATOR_STATE_GOING_DOWN)
-  {
-    if (y < LINES - 1)
+    break;
+  case ELEVATOR_STATE_STOPPED:
+    ++ticksWaited;
+    ticksWaited = ticksWaited + 1;
+    move(0, 0);
+    if (ticksWaited > TICKS_TO_STOP)
     {
-      y++;
+      state = previous_state;
     }
-  }
-  else if (state == ELEVATOR_STATE_GOING_UP)
-  {
-    if (y > 3)
-    {
-      y--;
-    }
-  }
-  else if (state == ELEVATOR_STATE_IDLE)
-  {
-  }
+    break;
 
-  Render();
+  default:
+    break;
+  }
 }
 
 void Elevator::Render()
 {
   int elevatorCapacity = ELEVATOR_HEIGHT * ELEVATOR_WIDTH;
-  for (int i =0; i < elevatorCapacity; i++)
+  for (int i = 0; i < elevatorCapacity; i++)
   {
-    move(i/ELEVATOR_WIDTH-1, i%ELEVATOR_WIDTH);
+    move(i / ELEVATOR_WIDTH - 1, i % ELEVATOR_WIDTH);
     addch(' ');
   }
 
@@ -103,7 +95,7 @@ void Elevator::Render()
   for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
   {
     ++i;
-    move(y - i/ELEVATOR_WIDTH-1, i%ELEVATOR_WIDTH);
+    move(y - i / ELEVATOR_WIDTH - 1, i % ELEVATOR_WIDTH);
     addch(passengerIt->getSprite());
   }
 
@@ -141,7 +133,8 @@ void Elevator::SetState(int newState)
 void Elevator::Stop()
 {
   ticksWaited = 0;
-  stopped = true;
+  previous_state = state;
+  state = ELEVATOR_STATE_STOPPED;
 }
 
 bool Elevator::IsStopped()

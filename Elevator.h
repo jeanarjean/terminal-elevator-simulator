@@ -30,6 +30,7 @@ private:
   int current_floor;
   int number_of_floors;
   int state;
+  int previous_state;
   int ticksWaited;
   bool stopped;
   std::vector<Passenger> *passengers;

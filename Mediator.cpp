@@ -42,47 +42,46 @@ void Mediator::Run()
 void Mediator::Update()
 {
 
-        std::vector<Floor>::iterator floorIt;
-        for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
+    std::vector<Floor>::iterator floorIt;
+    for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
+    {
+        floorIt->Update();
+        if (!elevator->IsStopped())
         {
-            floorIt->Update();
-            if (!elevator->IsStopped())
+            if (floorIt->GetHeight() == elevator->GetHeight())
             {
-                if (floorIt->GetHeight() == elevator->GetHeight())
+                if (floorIt->UpButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_UP)
                 {
-                    if (floorIt->UpButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_UP)
-                    {
-                        floorIt->ResetUpButton();
-                        elevator->Stop();
-                        TransferFromElevatorToFloor(elevator, &(*floorIt));
-                        TransferFromFloorToElevator(elevator, &(*floorIt));
-                    }
-                    if (floorIt->DownButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_DOWN)
-                    {
-                        floorIt->ResetDownButton();
-                        elevator->Stop();
-                        TransferFromElevatorToFloor(elevator, &(*floorIt));
-                        TransferFromFloorToElevator(elevator, &(*floorIt));
-                    }
-                    if (DetermineIfShouldStopForPassengers(elevator, &(*floorIt)))
-                    {
-                        elevator->Stop();
-                        TransferFromElevatorToFloor(elevator, &(*floorIt));
-                        TransferFromFloorToElevator(elevator, &(*floorIt));
-                    }
-                    DetermineElevatorDirection();
+                    floorIt->ResetUpButton();
+                    elevator->Stop();
+                    TransferFromElevatorToFloor(elevator, &(*floorIt));
+                    TransferFromFloorToElevator(elevator, &(*floorIt));
                 }
+                if (floorIt->DownButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_DOWN)
+                {
+                    floorIt->ResetDownButton();
+                    elevator->Stop();
+                    TransferFromElevatorToFloor(elevator, &(*floorIt));
+                    TransferFromFloorToElevator(elevator, &(*floorIt));
+                }
+                if (DetermineIfShouldStopForPassengers(elevator, &(*floorIt)))
+                {
+                    elevator->Stop();
+                    TransferFromElevatorToFloor(elevator, &(*floorIt));
+                    TransferFromFloorToElevator(elevator, &(*floorIt));
+                }
+                DetermineElevatorDirection();
             }
         }
-        elevator->Update();
-        SpawnPassenger();
-        refresh();
-    
+    }
+    elevator->Update();
+    SpawnPassenger();
+    refresh();
 }
 
 void Mediator::Render()
 {
-
+    elevator->Render();
 }
 
 bool Mediator::DetermineIfShouldStopForPassengers(Elevator *elevator, Floor *floor)
