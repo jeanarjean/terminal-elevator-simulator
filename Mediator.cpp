@@ -42,85 +42,20 @@ void Mediator::Run()
 void Mediator::Update()
 {
 
+    DetermineElevatorDirection();
     std::vector<Floor>::iterator floorIt;
     for (floorIt = floors->begin(); floorIt < floors->end(); floorIt++)
     {
         floorIt->Update();
-        if (!elevator->IsStopped())
-        {
-            if (floorIt->GetHeight() == elevator->GetHeight())
-            {
-                if (floorIt->UpButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_UP)
-                {
-                    floorIt->ResetUpButton();
-                    elevator->Stop();
-                    TransferFromElevatorToFloor(elevator, &(*floorIt));
-                    TransferFromFloorToElevator(elevator, &(*floorIt));
-                }
-                if (floorIt->DownButtonPressed() && elevator->GetState() == ELEVATOR_STATE_GOING_DOWN)
-                {
-                    floorIt->ResetDownButton();
-                    elevator->Stop();
-                    TransferFromElevatorToFloor(elevator, &(*floorIt));
-                    TransferFromFloorToElevator(elevator, &(*floorIt));
-                }
-                if (DetermineIfShouldStopForPassengers(elevator, &(*floorIt)))
-                {
-                    elevator->Stop();
-                    TransferFromElevatorToFloor(elevator, &(*floorIt));
-                    TransferFromFloorToElevator(elevator, &(*floorIt));
-                }
-                DetermineElevatorDirection();
-            }
-        }
     }
-    elevator->Update();
+    elevator->Update(floors);
     SpawnPassenger();
-    refresh();
 }
 
 void Mediator::Render()
 {
     elevator->Render();
-}
-
-bool Mediator::DetermineIfShouldStopForPassengers(Elevator *elevator, Floor *floor)
-{
-    std::vector<Passenger>::iterator passengerIt;
-    bool shouldStop = false;
-    for (passengerIt = elevator->getPassengers()->begin(); passengerIt < elevator->getPassengers()->end(); passengerIt++)
-    {
-        if (passengerIt->getFlootWantsToGo() == floor)
-        {
-            shouldStop = true;
-        }
-    }
-    return shouldStop;
-}
-
-void Mediator::TransferFromElevatorToFloor(Elevator *elevator, Floor *floor)
-{
-    std::vector<Passenger>::iterator passengerIt;
-    for (passengerIt = elevator->getPassengers()->begin(); passengerIt < elevator->getPassengers()->end(); passengerIt++)
-    {
-        if (passengerIt->getFlootWantsToGo() == floor)
-        {
-            elevator->getPassengers()->erase(passengerIt);
-        }
-    }
-}
-
-void Mediator::TransferFromFloorToElevator(Elevator *elevator, Floor *floor)
-{
-    std::vector<Passenger>::iterator passengerIt;
-    for (passengerIt = floor->getPassengers()->begin(); passengerIt < floor->getPassengers()->end(); passengerIt++)
-    {
-        if (passengerIt->getDirection() == elevator->GetState())
-        {
-            elevator->getPassengers()->insert(elevator->getPassengers()->end(), *(passengerIt));
-            floor->getPassengers()->erase(passengerIt);
-        }
-    }
+    refresh();
 }
 
 void Mediator::SpawnPassenger()

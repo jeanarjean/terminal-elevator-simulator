@@ -19,11 +19,8 @@ class Mediator
     std::vector<Floor> *floors;
     int ticksToSpawnPassenger;
 
-    void TransferFromElevatorToFloor(Elevator* elevator, Floor* floor);
-    void TransferFromFloorToElevator(Elevator* elevator, Floor* floor);
-
     void DetermineElevatorDirection();
-    bool DetermineIfShouldStopForPassengers(Elevator* elevator, Floor* floor);
+    bool DetermineIfShouldStopForPassengers(Elevator *elevator, Floor *floor);
 
     void SpawnPassenger();
 };

@@ -7,16 +7,18 @@
 using namespace std;
 
 class Passenger;
+class Floor;
 
 class Elevator
 {
 public:
   Elevator();
-  void Update();
+  void Update(std::vector<Floor> *Floors);
 
   void Render();
   void InitRender();
   void Stop();
+  void Readjust();
   void EraseElevatorLag(int y);
   void SetState(int newState);
   const int GetState();
@@ -26,6 +28,16 @@ public:
   void Readjust(int readjustHeight);
 
 private:
+  void GoUp(std::vector<Floor> *floors);
+  void GoDown(std::vector<Floor> *floors);
+  void Idle();
+  void Readjusting();
+  void Stopped();
+
+  bool ShouldStopForPassengers(Floor *floor);
+  void TransferPassengersToFloor(Floor *floor);
+  void AcquirePassengersFromFloor(Floor *floor);
+
   int readjustingHeight;
   int current_floor;
   int number_of_floors;
