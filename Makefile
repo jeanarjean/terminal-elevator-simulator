@@ -1,4 +1,4 @@
-CFLAGS = -O
+CFLAGS = -O -g
 CC = g++
 SRC = Main.cpp Elevator.cpp Mediator.cpp Floor.cpp Passenger.cpp
 OBJ = $(SRC:.cpp = .o)
