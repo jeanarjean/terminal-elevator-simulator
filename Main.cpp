@@ -1,20 +1,14 @@
-#include <iostream>
-#include <ncurses.h>
-#include "Elevator.h"
 #include "Mediator.h"
+#include <ncurses.h>
 
-using namespace std;
-
-int main()
+int main(int argc, char const *argv[])
 {
-  initscr();
-  noecho();
+    initscr();
+    noecho();
 
-  Mediator mediator;
+    Mediator mediator;
+    mediator.Run();
 
-  mediator.Run();
-
-  endwin();
-  return 0;
+    endwin();
+    return 0;
 }
-
