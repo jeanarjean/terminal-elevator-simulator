@@ -18,6 +18,7 @@ Mediator::Mediator()
 
 void Mediator::Run()
 {
+    InitRender();
     while (1)
     {
         Update();
@@ -28,8 +29,23 @@ void Mediator::Run()
 void Mediator::Update()
 {
     elevator->Update();
+    for (auto x : *floors)
+    {
+        x.second.Update();
+    }
 }
 
 void Mediator::Render()
 {
+    elevator->Render();
+    for (auto x : *floors)
+    {
+        x.second.Render();
+    }
+    refresh();
+}
+
+void Mediator::InitRender()
+{
+    elevator->InitRender();
 }

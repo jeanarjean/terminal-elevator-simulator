@@ -16,6 +16,7 @@ public:
 private:
     void Update();
     void Render();
+    void InitRender();
 
     Elevator *elevator;
     map<int, Floor> *floors;
