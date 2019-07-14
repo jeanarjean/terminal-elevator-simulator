@@ -14,12 +14,26 @@ public:
     void Render();
     void AddPassenger(Passenger *passenger);
 
+    // GoGetters
+    bool CallFloor();
+    void resetFloorCalled();
+    bool GetUpButtonState();
+    bool GetDownButtonState();
+    void CallElevatorUp();
+    void CallElevatorDown();
+    void ResetUpButton();
+    void ResetDownButton();
+    vector<Passenger *> *GetPassengers();
+
     // DEBUG
     int GetHeight();
 
 private:
     int height;
-    vector<Passenger*> *passengers;
+    bool upButtonPressed;
+    bool downButtonPressed;
+    bool floorIsCalled;
+    vector<Passenger *> *passengers;
 };
 
 #endif

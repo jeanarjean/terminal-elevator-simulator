@@ -1,4 +1,4 @@
-#ifndef COSNTANTS_H
+#ifndef CONSTANTS_H
 #define CONSTANTS_H
 
 const int ELEVATOR_STATE_IDLE = 0;

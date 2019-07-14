@@ -14,6 +14,7 @@ Mediator::Mediator()
         Floor *floor = new Floor(i);
         floors->insert({i, floor});
     }
+    currentTick = 0;
 }
 
 void Mediator::Run()
@@ -59,44 +60,51 @@ void Mediator::InitRender()
 
 void Mediator::SpawnPassenger()
 {
-    map<int, Floor *>::iterator floorIt;
-    Floor *targetedFloor;
-    int direction;
-    int spawnFloorHeight = rand_between(0, floors->size());
-    int requestedFloorHeight;
+    currentTick++;
+    if (currentTick > shouldSpawnOnThisTick)
+    {
+        currentTick = 0;
+        map<int, Floor *>::iterator floorIt;
+        Floor *targetedFloor;
+        int direction;
+        int spawnFloorMapOrder = rand_between(0, floors->size());
+        int requestedFloorHeight;
 
-    if (spawnFloorHeight == 0)
-    {
-        direction = ELEVATOR_STATE_GOING_DOWN;
-    }
-    else if (spawnFloorHeight == floors->size())
-    {
-        direction = ELEVATOR_STATE_GOING_UP;
-    }
-    else
-    {
-        direction = rand_between(ELEVATOR_STATE_GOING_DOWN, ELEVATOR_STATE_GOING_UP);
-    }
+        if (spawnFloorMapOrder == 0)
+        {
+            direction = ELEVATOR_STATE_GOING_UP;
+        }
+        else if (spawnFloorMapOrder == floors->size() - 1)
+        {
+            direction = ELEVATOR_STATE_GOING_DOWN;
+        }
+        else
+        {
+            direction = rand_between(ELEVATOR_STATE_GOING_DOWN, ELEVATOR_STATE_GOING_UP);
+            addch(direction);
+        }
 
-    switch (direction)
-    {
-    case ELEVATOR_STATE_GOING_DOWN:
-        requestedFloorHeight = rand_between(spawnFloorHeight + 1, floors->size());
-        break;
-    case ELEVATOR_STATE_GOING_UP:
-        requestedFloorHeight = rand_between(spawnFloorHeight, floors->size() - 1);
-        break;
-    default:
-        throw std::__throw_bad_exception;
-        break;
-    }
-    floorIt = floors->find(LINES - 1 - (spawnFloorHeight * FLOOR_HEIGHT));
-    if (floorIt != floors->end())
-    {
-        floorIt->second->AddPassenger(new Passenger(requestedFloorHeight, direction));
-    }
+        floorIt = floors->find(LINES - 1 - (spawnFloorMapOrder * FLOOR_HEIGHT));
+        switch (direction)
+        {
+        case ELEVATOR_STATE_GOING_DOWN:
+            requestedFloorHeight = rand_between(spawnFloorMapOrder + 1, floors->size());
+            floorIt->second->CallElevatorDown();
+            break;
+        case ELEVATOR_STATE_GOING_UP:
+            requestedFloorHeight = rand_between(spawnFloorMapOrder, floors->size() - 1);
+            floorIt->second->CallElevatorUp();
+            break;
+        default:
+            break;
+        }
+        if (floorIt != floors->end())
+        {
+            floorIt->second->AddPassenger(new Passenger(requestedFloorHeight, direction));
+        }
 
-    direction = 2;
+        direction = 2;
+    }
 }
 
 int Mediator::rand_between(int min, int max)

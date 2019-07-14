@@ -9,11 +9,15 @@ class Passenger
 {
 public:
     Passenger(int requestedFloorHeight, int direction);
-    int direction;
-    int requestedFloorHeight;
+    int GetDirection();
+    int GetRequestedFloorHeight();
+    const char GetSprite();
 
 private:
     int rand_between(int min, int max);
+    int requestedFloorHeight;
+    int direction;
+    char sprite;
 };
 
 #endif

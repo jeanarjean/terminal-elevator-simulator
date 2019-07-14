@@ -1,16 +1,18 @@
 #include "Elevator.h"
+#include "Passenger.h"
 #include "Constants.h"
 #include "Floor.h"
 
 Elevator::Elevator()
 {
     state = ELEVATOR_STATE_GOING_UP;
-    requestedFloors = new map<int, Floor*>;
+    requestedFloors = new map<int, Floor *>;
+    passengers = new vector<Passenger *>;
 }
 
 // HOLY FINITE STATE AUTOMATA
 
-void Elevator::Update(map<int, Floor*> *floors)
+void Elevator::Update(map<int, Floor *> *floors)
 {
     switch (state)
     {
@@ -29,33 +31,62 @@ void Elevator::Update(map<int, Floor*> *floors)
     case ELEVATOR_STATE_STOPPED:
         Stopped();
         break;
-
     default:
         break;
     }
 }
 
-void Elevator::GoUp(map<int, Floor*> *floors)
+void Elevator::GoUp(map<int, Floor *> *floors)
 {
-    map<int, Floor*>::iterator floorIt;
+    map<int, Floor *>::iterator floorIt;
     if (y > 3)
     {
         y--;
     }
-    floorIt = floors->find(y); 
-    if(floorIt != floors->end())
+    floorIt = floors->find(y);
+    if (floorIt != floors->end())
     {
-        Stop();
-        std::next(floorIt);
-        addch(floorIt->second->GetHeight());
+        if (floorIt->second->GetUpButtonState())
+        {
+            floorIt->second->ResetUpButton();
+            PickupPassengersFromFloor(floorIt->second);
+            DropOffPassengersOnFloor(floorIt->second);
+            Stop();
+        }
+        else if (floorIt->second == floors->begin()->second)
+        {
+            state = ELEVATOR_STATE_GOING_DOWN;
+            floorIt->second->ResetDownButton();
+            PickupPassengersFromFloor(floorIt->second);
+            Stop();
+        }
     }
 }
 
-void Elevator::GoDown(map<int, Floor*> *floors)
+void Elevator::GoDown(map<int, Floor *> *floors)
 {
+    map<int, Floor *>::iterator floorIt;
     if (y < LINES)
     {
         y++;
+    }
+    floorIt = floors->find(y);
+    if (floorIt != floors->end())
+    {
+        if (floorIt->second->GetDownButtonState())
+        {
+            floorIt->second->ResetDownButton();
+            PickupPassengersFromFloor(floorIt->second);
+            DropOffPassengersOnFloor(floorIt->second);
+            Stop();
+        }
+        else if (floorIt->second == floors->rbegin()->second)
+        {
+            state = ELEVATOR_STATE_GOING_UP; // NEEDS ANOTHER ELESE OR SOMETHING
+            floorIt->second->ResetUpButton();
+            PickupPassengersFromFloor(floorIt->second);
+            Stop();
+        }
     }
 }
 
@@ -103,9 +134,51 @@ void Elevator::Stop()
     state = ELEVATOR_STATE_STOPPED;
 }
 
+void Elevator::DropOffPassengersOnFloor(Floor *floor)
+{
+    vector<Passenger *>::iterator passengerIt;
+    for (passengerIt = passengers->begin(); passengerIt < passengers->end();)
+    {
+        if ((*passengerIt)->GetRequestedFloorHeight() == floor->GetHeight())
+        {
+            passengers->erase(passengerIt);
+        }
+        else
+        {
+            ++passengerIt;
+        }
+    }
+}
+
+void Elevator::PickupPassengersFromFloor(Floor *floor)
+{
+    vector<Passenger *>::iterator passengerIt;
+    for (passengerIt = floor->GetPassengers()->begin(); passengerIt != floor->GetPassengers()->end();)
+    {
+        if ((*passengerIt)->GetDirection() == state)
+        {
+            passengers->insert(passengers->end(), *passengerIt);
+            passengerIt = floor->GetPassengers()->erase(passengerIt);
+        }
+        else
+        {
+            ++passengerIt;
+        }
+    }
+}
+
 // RENDER
 void Elevator::Render()
 {
+    int i = 0;
+    std::vector<Passenger*>::iterator passengerIt;
+    for (passengerIt = passengers->begin(); passengerIt < passengers->end(); passengerIt++)
+    {
+        ++i;
+        move(y - i / ELEVATOR_WIDTH - 1, i % ELEVATOR_WIDTH);
+        addch((*passengerIt)->GetSprite());
+    }
+
     EraseElevatorRenderLag(y + 1);
     EraseElevatorRenderLag(y - ELEVATOR_HEIGHT);
     mvwin(win, y - ELEVATOR_HEIGHT + 1, 0);
@@ -133,7 +206,7 @@ void Elevator::EraseElevatorRenderLag(int height)
     move(height, 0);
 }
 
-map<int, Floor*> * Elevator::GetRequestFloors()
+map<int, Floor *> *Elevator::GetRequestFloors()
 {
     return requestedFloors;
 }

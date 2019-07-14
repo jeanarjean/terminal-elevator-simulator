@@ -22,6 +22,8 @@ private:
     void InitRender();
     void SpawnPassenger();
     int rand_between(int min, int max);
+    int currentTick;
+    const int shouldSpawnOnThisTick = 5;
 };
 
 #endif

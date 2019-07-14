@@ -1,11 +1,13 @@
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
 #include <ncurses.h>
+#include "vector"
 #include <map>
 
 using namespace std;
 
 class Floor;
+class Passenger;
 
 class Elevator
 {
@@ -16,6 +18,8 @@ public:
     void Render();
     void InitRender();
     map<int, Floor*> * GetRequestFloors();
+    void DropOffPassengersOnFloor(Floor* floor); 
+    void PickupPassengersFromFloor(Floor* floor); 
 
 private:
     int state;
@@ -25,6 +29,7 @@ private:
     int previous_state;
     WINDOW *win;
     map<int, Floor*> *requestedFloors;
+    vector<Passenger*> *passengers;
 
     void GoUp(map<int, Floor*> *floors);
     void GoDown(map<int, Floor*> *floors);
